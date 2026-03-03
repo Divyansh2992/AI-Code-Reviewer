@@ -5,7 +5,7 @@ const cors = require("cors");
 const app = express();
 app.use(express.json());
 app.use(cors({
-    origin: ["https://ai-code-reviewer-ebon.vercel.app", "http://localhost:5173", "http://localhost:5174"]
+    origin: ["https://ai-code-reviewer-ebon.vercel.app", "https://ai-code-reviewer-git-main-divyansh2992s-projects.vercel.app", "http://localhost:5173", "http://localhost:5174"]
 }));
 
 app.use("/ai", (aiRoutes));
