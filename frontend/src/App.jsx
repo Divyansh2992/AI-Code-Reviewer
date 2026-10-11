@@ -7,6 +7,7 @@ import Editor from "react-simple-code-editor";
 import axios from "axios";
 import Markdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
+import remarkGfm from "remark-gfm";
 import "highlight.js/styles/github-dark.css";
 
 function App() {
@@ -46,7 +47,7 @@ function App() {
           <span className="logo-icon">⚡</span>
           <span className="logo-text">AI Code Reviewer</span>
         </div>
-        <span className="header-badge">Powered by Groq · LLaMA 3.3</span>
+        <span className="header-badge">Powered by Groq · GPT-OSS 120B</span>
       </header>
 
       <main>
@@ -112,7 +113,7 @@ function App() {
               <div className="skeleton-line wide" />
               <div className="skeleton-line short" />
               <div className="skeleton-line medium" />
-              <p className="skeleton-hint">Analyzing your code with LLaMA 3.3…</p>
+              <p className="skeleton-hint">Analyzing your code with GPT-OSS 120B…</p>
             </div>
           )}
 
@@ -128,7 +129,7 @@ function App() {
 
           {!isLoading && !error && review && (
             <div className="review-content">
-              <Markdown rehypePlugins={[rehypeHighlight]}>{review}</Markdown>
+              <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>{review}</Markdown>
             </div>
           )}
 

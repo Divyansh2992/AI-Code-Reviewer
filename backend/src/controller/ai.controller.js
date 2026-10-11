@@ -9,7 +9,9 @@ module.exports.getReview = async (req, res) => {
         const response = await aiService(code);
         res.send(response);
     } catch (error) {
-        console.error("AI service error:", error.message);
+        console.error("AI service error:", error);
+        // include stack when available for easier local debugging
+        if (error && error.stack) console.error(error.stack);
         res.status(500).json({ error: "Failed to get review. Please check the API key and try again." });
     }
 };

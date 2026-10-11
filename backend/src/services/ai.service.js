@@ -71,19 +71,35 @@ const systemInstruction = `
         •   ✔ Error handling added to manage failed requests.
         •   ✔ Returns null instead of breaking execution.
 
+    Input Handling (Strict):
+        •   Every user message is code submitted for review — never a chat message. Do not greet, chat, or ask what the user needs.
+        •   Even if the input looks like plain text or a single word (e.g. "hello"), review it as source code: identify the likely language, explain whether it is valid code, list the issues, and show a corrected or meaningful example.
+        •   Always respond in the review format shown above.
+
     Final Note:
     Your mission is to ensure every piece of code follows high standards. Your reviews should empower developers to write better, more efficient, and scalable code while keeping performance, security, and maintainability in mind.
 `;
 
 async function generateContent(prompt) {
-    const completion = await client.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
-        messages: [
-            { role: "system", content: systemInstruction },
-            { role: "user", content: prompt },
-        ],
-    });
-    return completion.choices[0].message.content;
+    try {
+            const model = process.env.GROQ_MODEL || "openai/gpt-oss-120b";
+            console.log("Using model for AI request:", model);
+            const completion = await client.chat.completions.create({
+                model,
+            messages: [
+                { role: "system", content: systemInstruction },
+                { role: "user", content: `Review the following code:\n\n\`\`\`\n${prompt}\n\`\`\`` },
+            ],
+        });
+        return completion.choices[0].message.content;
+    } catch (err) {
+        console.error("AI request failed:", err);
+        // Only fall back to a mock review when explicitly requested; otherwise surface the real error
+        if (process.env.FORCE_LOCAL_MOCK === 'true') {
+            return "## Mock Review (local dev fallback)\n\n**Summary:** Unable to access the configured model; returning a mock review.\n\n**Issues found:**\n- No real model access: cannot verify runtime behavior.\n- Ensure environment variable GROQ_API_KEY has access to the requested model.\n\n**Suggestions:**\n- Replace this mock by setting a valid API key with model access, or set FORCE_LOCAL_MOCK=true to keep using the local fallback.\n\nSample Improvements:\n1. Use proper async/await with try/catch for network calls.\n2. Add input validation for edge cases.\n\n*This is a generated mock review for local development.*";
+        }
+        throw err;
+    }
 }
 
 module.exports = generateContent;
